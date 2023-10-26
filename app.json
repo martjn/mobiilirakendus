@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Mobiilirakendus",
+    "slug": "Mobiilirakendus",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "Mobiilirakendus"
+}
