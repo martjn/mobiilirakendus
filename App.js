@@ -7,8 +7,7 @@ import Chart from "./Chart";
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>yo</Text>
-
+      
       <Chart />
       <StatusBar style="auto" />
     </View>

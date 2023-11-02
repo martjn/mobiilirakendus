@@ -33,11 +33,13 @@ const Chart = () => {
   const [priceData, setPriceData] = useState([]);
   const [prices, setPrices] = useState([]);
   const [timestamps, setTimestamps] = useState([]);
+  const startTime=`2023-10-31`
+  const endTime=`2023-11-03`
 
   useEffect(() => {
     axios
       .get(
-        `https://dashboard.elering.ee/api/nps/price?start=2023-10-25T20%3A59%3A59.999Z&end=2023-10-26T20%3A59%3A59.999Z`
+        `https://dashboard.elering.ee/api/nps/price?start=${startTime}T21%3A59%3A59.999Z&end=${endTime}T21%3A59%3A59.999Z`
       )
       .then((response) => {
         setPriceData(response.data.data.ee);
@@ -49,7 +51,7 @@ const Chart = () => {
 
   useEffect(() => {
     const extractedPrices = priceData.map((dataObject) => {
-      return dataObject.price;
+      return dataObject.price*.12;
     });
     const extractedTimestamps = priceData.map((dataObject) => {
       return getDateFromTimestamp(dataObject.timestamp);
@@ -61,7 +63,8 @@ const Chart = () => {
   return (
     priceData.length > 0 && (
       <>
-        <Text>Börsi kurss</Text>
+        <Text>{startTime} ööst kuni {endTime} ööni</Text>
+        <Text>Elektri börsihind senti/kWh</Text>
         <LineChart
           data={{
             labels:
@@ -77,7 +80,7 @@ const Chart = () => {
             ],
           }}
           width={Dimensions.get("window").width} // from react-native
-          height={220}
+          height={Dimensions.get("window").height / 2}
           yAxisLabel=""
           yAxisSuffix=""
           yAxisInterval={1} // optional, defaults to 1
