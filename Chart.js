@@ -5,11 +5,8 @@ import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 
 const getDateFromTimestamp = (timestamp) => {
-  const date = new Date(timestamp * 1000).toLocaleDateString("et-EE", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  return date;
+  const date = new Date(timestamp * 1000);
+  return `${date.getHours().toString().padStart(2, "0")}`;
 };
 
 const chartConfig = {
@@ -37,7 +34,7 @@ const Chart = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dashboard.elering.ee/api/nps/price?start=2023-10-25T20%3A59%3A59.999Z&end=2023-10-26T20%3A59%3A59.999Z`
+        `https://dashboard.elering.ee/api/nps/price?start=2023-10-25T23%3A59%3A59.999Z&end=2023-10-26T23%3A59%3A59.999Z`
       )
       .then((response) => {
         setPriceData(response.data.data.ee);
@@ -52,47 +49,51 @@ const Chart = () => {
       return dataObject.price;
     });
     const extractedTimestamps = priceData.map((dataObject) => {
+      console.log(dataObject.timestamp);
       return getDateFromTimestamp(dataObject.timestamp);
     });
+    let modifiedTimestamps = [];
+    for (let i = 0; i < extractedTimestamps.length; i++) {
+      if (i % 2 == 0) {
+        modifiedTimestamps.push(extractedTimestamps[i]);
+      }
+    }
     setPrices(extractedPrices);
-    setTimestamps(extractedTimestamps);
+    setTimestamps(modifiedTimestamps);
   }, [priceData]);
 
   return (
-    priceData.length > 0 && (
-      <>
-        <Text>Börsi kurss</Text>
-        <LineChart
-          data={{
-            labels:
-              timestamps.length != 0
-                ? timestamps.map((timestamp) => {
-                    return timestamp;
-                  })
-                : ["????"],
-            datasets: [
-              {
-                data: prices.length != 0 ? prices : [1, 2, 3, 4],
-              },
-            ],
-          }}
-          width={Dimensions.get("window").width} // from react-native
-          height={220}
-          yAxisLabel=""
-          yAxisSuffix=""
-          yAxisInterval={1} // optional, defaults to 1
-          chartConfig={chartConfig}
-          bezier
-          fromZero
-          style={{
-            marginVertical: 4,
-            borderRadius: 4,
-          }}
-          yLabelsOffset={5}
-          verticalLabelRotation={45}
-        />
-      </>
-    )
+    <>
+      <Text>Börsi kurss</Text>
+      <LineChart
+        data={{
+          labels:
+            timestamps.length != 0
+              ? timestamps.map((timestamp) => {
+                  return timestamp;
+                })
+              : ["????"],
+          datasets: [
+            {
+              data: prices.length != 0 ? prices : [1, 2, 3, 4],
+            },
+          ],
+        }}
+        width={Dimensions.get("window").width - 20} // from react-native
+        height={Dimensions.get("window").height / 2}
+        yAxisLabel=""
+        yAxisSuffix=""
+        yAxisInterval={1} // optional, defaults to 1
+        chartConfig={chartConfig}
+        bezier
+        fromZero
+        style={{
+          marginVertical: 4,
+          borderRadius: 4,
+        }}
+        yLabelsOffset={5}
+      />
+    </>
   );
 };
 
