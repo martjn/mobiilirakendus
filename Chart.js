@@ -31,10 +31,32 @@ const Chart = () => {
   const [prices, setPrices] = useState([]);
   const [timestamps, setTimestamps] = useState([]);
 
+  const [startTime, setStartTime] = useState();
+  const [endTime, setEndTime] = useState();
+
   useEffect(() => {
+    const today = new Date();
+    setStartTime(
+      `${today.getFullYear()}-${
+        today.getMonth() + 1
+      }-${today
+        .getDate()
+        .toString()
+        .padStart(2, "0")}T${today.getHours().toString().padStart(2, "0")}%3A00`
+    );
+    setEndTime(
+      `${today.getFullYear()}-${today.getMonth() + 1}-${(today.getDate() + 1)
+        .toString()
+        .padStart(2, "0")}`
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log("startTime =>", startTime);
+    console.log("endTime =>", endTime);
     axios
       .get(
-        `https://dashboard.elering.ee/api/nps/price?start=2023-10-25T23%3A59%3A59.999Z&end=2023-10-26T23%3A59%3A59.999Z`
+        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}T23%3A59%3A59.999Z`
       )
       .then((response) => {
         setPriceData(response.data.data.ee);
@@ -49,7 +71,6 @@ const Chart = () => {
       return dataObject.price;
     });
     const extractedTimestamps = priceData.map((dataObject) => {
-      console.log(dataObject.timestamp);
       return getDateFromTimestamp(dataObject.timestamp);
     });
     let modifiedTimestamps = [];
