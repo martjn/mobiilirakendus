@@ -5,11 +5,8 @@ import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 
 const getDateFromTimestamp = (timestamp) => {
-  const date = new Date(timestamp * 1000).toLocaleDateString("et-EE", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  return date;
+  const date = new Date(timestamp * 1000);
+  return `${date.getHours().toString().padStart(2, "0")}`;
 };
 
 const chartConfig = {
@@ -33,8 +30,6 @@ const Chart = () => {
   const [priceData, setPriceData] = useState([]);
   const [prices, setPrices] = useState([]);
   const [timestamps, setTimestamps] = useState([]);
-  const startTime=`2023-10-31`
-  const endTime=`2023-11-03`
 
   useEffect(() => {
     axios
@@ -54,14 +49,20 @@ const Chart = () => {
       return dataObject.price*.12;
     });
     const extractedTimestamps = priceData.map((dataObject) => {
+      console.log(dataObject.timestamp);
       return getDateFromTimestamp(dataObject.timestamp);
     });
+    let modifiedTimestamps = [];
+    for (let i = 0; i < extractedTimestamps.length; i++) {
+      if (i % 2 == 0) {
+        modifiedTimestamps.push(extractedTimestamps[i]);
+      }
+    }
     setPrices(extractedPrices);
-    setTimestamps(extractedTimestamps);
+    setTimestamps(modifiedTimestamps);
   }, [priceData]);
 
   return (
-    priceData.length > 0 && (
       <>
         <Text>{startTime} ööst kuni {endTime} ööni</Text>
         <Text>Elektri börsihind senti/kWh</Text>
@@ -95,7 +96,6 @@ const Chart = () => {
           verticalLabelRotation={45}
         />
       </>
-    )
   );
 };
 
