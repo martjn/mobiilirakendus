@@ -3,7 +3,8 @@ import { View, StyleSheet, Dimensions } from "react-native";
 import { Text } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
-
+import Button from "./Button";
+ 
 const getDateFromTimestamp = (timestamp) => {
   const date = new Date(timestamp * 1000);
   return `${date.getHours().toString().padStart(2, "0")}`;
@@ -36,7 +37,7 @@ const Chart = () => {
 
   useEffect(() => {
     const extractedPrices = priceData.map((dataObject) => {
-      return dataObject.price * 0.12;
+      return dataObject.price *.12;
     });
     const extractedTimestamps = priceData.map((dataObject) => {
       return getDateFromTimestamp(dataObject.timestamp);
@@ -50,16 +51,16 @@ const Chart = () => {
     setPrices(extractedPrices);
     setTimestamps(modifiedTimestamps);
   }, [priceData]);
-
+  
   useEffect(() => {
     const today = new Date();
     setStartTime(
-      `${today.getFullYear()}-${
-        today.getMonth() + 1
+      `${today.getUTCFullYear()}-${
+        today.getUTCMonth() + 1
       }-${today
-        .getDate()
+        .getUTCDate()
         .toString()
-        .padStart(2, "0")}T${today.getHours().toString().padStart(2, "0")}%3A00`
+        .padStart(2, "0")}T${today.getUTCHours().toString().padStart(2, "0")}%3A00`
     );
     setEndTime(
       `${today.getFullYear()}-${today.getMonth() + 1}-${(today.getDate() + 1)
@@ -116,9 +117,13 @@ const Chart = () => {
           borderRadius: 4,
         }}
         yLabelsOffset={5}
-      />
+      /> 
+      <View style={{flexDirection:'row'}} >
+        <Button title="Vali Kuupäev"></Button>
+      <Button title="Meeldetuletused"></Button>
+      </View>
     </>
   );
 };
-
+ 
 export default React.memo(Chart);
