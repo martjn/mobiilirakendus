@@ -35,6 +35,23 @@ const Chart = () => {
   const [endTime, setEndTime] = useState();
 
   useEffect(() => {
+    const extractedPrices = priceData.map((dataObject) => {
+      return dataObject.price * 0.12;
+    });
+    const extractedTimestamps = priceData.map((dataObject) => {
+      return getDateFromTimestamp(dataObject.timestamp);
+    });
+    let modifiedTimestamps = [];
+    for (let i = 0; i < extractedTimestamps.length; i++) {
+      if (i % 2 == 0) {
+        modifiedTimestamps.push(extractedTimestamps[i]);
+      }
+    }
+    setPrices(extractedPrices);
+    setTimestamps(modifiedTimestamps);
+  }, [priceData]);
+
+  useEffect(() => {
     const today = new Date();
     setStartTime(
       `${today.getFullYear()}-${
@@ -66,26 +83,12 @@ const Chart = () => {
       });
   }, []);
 
-  useEffect(() => {
-    const extractedPrices = priceData.map((dataObject) => {
-      return dataObject.price;
-    });
-    const extractedTimestamps = priceData.map((dataObject) => {
-      return getDateFromTimestamp(dataObject.timestamp);
-    });
-    let modifiedTimestamps = [];
-    for (let i = 0; i < extractedTimestamps.length; i++) {
-      if (i % 2 == 0) {
-        modifiedTimestamps.push(extractedTimestamps[i]);
-      }
-    }
-    setPrices(extractedPrices);
-    setTimestamps(modifiedTimestamps);
-  }, [priceData]);
-
   return (
     <>
-      <Text>Börsi kurss</Text>
+      <Text>
+        {startTime} ööst kuni {endTime} ööni
+      </Text>
+      <Text>Elektri börsihind senti/kWh</Text>
       <LineChart
         data={{
           labels:
