@@ -9,6 +9,12 @@ const getDateFromTimestamp = (timestamp) => {
   return `${date.getHours().toString().padStart(2, "0")}`;
 };
 
+const getDisplayableDate = (date) => {
+  const convertedDate = date.substring(0, 10);
+
+  return convertedDate;
+};
+
 const chartConfig = {
   backgroundColor: "#f1f1f1",
   backgroundGradientFrom: "#f1f1f1",
@@ -86,7 +92,7 @@ const Chart = () => {
   return (
     <>
       <Text>
-        {startTime} ööst kuni {endTime} ööni
+        {getDisplayableDate(startTime)} ööst kuni {endTime} ööni
       </Text>
       <Text>Elektri börsihind senti/kWh</Text>
       <LineChart
