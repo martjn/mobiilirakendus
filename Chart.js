@@ -10,7 +10,7 @@ const getDateFromTimestamp = (timestamp) => {
   const date = new Date(timestamp * 1000);
   return `${date.getHours().toString().padStart(2, "0")}`;
 };
-
+ 
 const getDisplayableDate = (date) => {
   let convertedDate;
   if (date) {
@@ -63,7 +63,7 @@ const chartConfig = {
   },
 };
 
-const Chart = () => {
+const Chart = ({navigation}) => {
   const [priceData, setPriceData] = useState([]);
   const [prices, setPrices] = useState([]);
   const [timestamps, setTimestamps] = useState([]);
@@ -107,7 +107,7 @@ const Chart = () => {
     setTimestamps(modifiedTimestamps);
     console.log("priceData => ", priceData);
   }, [priceData]);
-
+  
   useEffect(() => {
     console.log("startTime =>", startTime);
     console.log("endTime =>", endTime);
@@ -140,7 +140,6 @@ const Chart = () => {
           {getDisplayableDate(startTime)} kuni {endTime}
         </Text>
       )}
-
       <Text>Elektri börsihind senti/kWh</Text>
       <LineChart
         data={{
@@ -204,7 +203,7 @@ const Chart = () => {
           </View>
         </Modal>
         <Button title="Vali kuupäev" onPress={toggleDateModal} />
-        <Button title="Meeldetuletused"></Button>
+        <Button onPress={()=>navigation.navigate('Reminder')} title="Meeldetuletused"></Button>
       </View>
     </>
   );
