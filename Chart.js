@@ -9,11 +9,16 @@ const getDateFromTimestamp = (timestamp) => {
   const date = new Date(timestamp * 1000);
   return `${date.getHours().toString().padStart(2, "0")}`;
 };
-
+ 
 const getDisplayableDate = (date) => {
-  const convertedDate = date.substring(0, 10);
-
-  return convertedDate;
+  let convertedDate;
+  if(convertedDate){
+    convertedDate = date.substring(0,10);
+    return convertedDate;
+  }
+  else{
+    return null
+  }
 };
 
 const chartConfig = {
@@ -33,7 +38,7 @@ const chartConfig = {
   },
 };
 
-const Chart = () => {
+const Chart = ({navigation}) => {
   const [priceData, setPriceData] = useState([]);
   const [prices, setPrices] = useState([]);
   const [timestamps, setTimestamps] = useState([]);
@@ -61,10 +66,10 @@ const Chart = () => {
   useEffect(() => {
     const today = new Date();
     setStartTime(
-      `${today.getUTCFullYear()}-${
-        today.getUTCMonth() + 1
+      `${today.getFullYear()}-${
+        today.getMonth() + 1
       }-${today
-        .getUTCDate()
+        .getDate()
         .toString()
         .padStart(2, "0")}T${today.getUTCHours().toString().padStart(2, "0")}%3A00`
     );
@@ -80,7 +85,7 @@ const Chart = () => {
     console.log("endTime =>", endTime);
     axios
       .get(
-        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}T23%3A59%3A59.999Z`
+        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}T21%3A59%3A59.999Z`
       )
       .then((response) => {
         setPriceData(response.data.data.ee);
@@ -89,11 +94,11 @@ const Chart = () => {
         console.error("API request error: ", error);
       });
   }, []);
-
+   
   return (
     <>
       <Text>
-        {getDisplayableDate(startTime)} ööst kuni {endTime} ööni
+        {getDisplayableDate(startTime)} kuni {endTime}
       </Text>
       <Text>Elektri börsihind senti/kWh</Text>
       <LineChart
@@ -126,7 +131,7 @@ const Chart = () => {
       /> 
       <View style={{flexDirection:'row'}} >
         <Button title="Vali Kuupäev"></Button>
-      <Button title="Meeldetuletused"></Button>
+      <Button onPress={()=>navigation.navigate('Reminder')} title="Meeldetuletused"></Button>
       </View>
     </>
   );

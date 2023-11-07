@@ -2,22 +2,15 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import axios from "axios";
-import Chart from "./Chart";
+import Navigation from "./Navigation";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Chart />
-      <StatusBar style="auto" />
-    </View>
+    <Navigation></Navigation>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+//<View style={styles.container}>
+//      <Reminder />
+//      <StatusBar style="auto" />
+//    </View>
