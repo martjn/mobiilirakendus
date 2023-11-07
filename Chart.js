@@ -1,19 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet, Dimensions, Modal } from "react-native";
 import { Text } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 import Button from "./Button";
- 
+import DatePicker from "react-native-date-picker";
+
 const getDateFromTimestamp = (timestamp) => {
   const date = new Date(timestamp * 1000);
   return `${date.getHours().toString().padStart(2, "0")}`;
 };
 
 const getDisplayableDate = (date) => {
-  const convertedDate = date.substring(0, 10);
+  let convertedDate;
+  if (date) {
+    convertedDate = date.substring(0, 10);
+    return convertedDate;
+  } else {
+    return null;
+  }
+};
 
-  return convertedDate;
+const changeDate = (date) => {
+  let newStartDate = `${date.getUTCFullYear().toString()}-${(
+    date.getUTCMonth() + 1
+  )
+    .toString()
+    .padStart(2, "0")}-${date
+    .getUTCDate()
+    .toString()
+    .padStart(2, "0")}T${date.getUTCHours().toString().padStart(2, "0")}%3A00`;
+  let newEndDate = `${date.getFullYear().toString()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${(date.getDate() + 1).toString().padStart(2, "0")}`;
+  return { newStartDate: newStartDate, newEndDate: newEndDate };
+};
+
+const generateDate = (dateString) => {
+  // Replace %3A with a colon (:) to make it a valid date format
+  const formattedDateString = dateString.replace(/%3A/g, ":");
+
+  // Create a new Date object from the formatted string
+  const dateObject = new Date(formattedDateString);
+
+  return dateObject;
 };
 
 const chartConfig = {
@@ -38,12 +68,31 @@ const Chart = () => {
   const [prices, setPrices] = useState([]);
   const [timestamps, setTimestamps] = useState([]);
 
-  const [startTime, setStartTime] = useState();
-  const [endTime, setEndTime] = useState();
+  const today = new Date();
+
+  const [startTime, setStartTime] = useState(
+    `${today.getUTCFullYear()}-${
+      today.getUTCMonth() + 1
+    }-${today
+      .getUTCDate()
+      .toString()
+      .padStart(2, "0")}T${today
+      .getUTCHours()
+      .toString()
+      .padStart(2, "0")}%3A00`
+  );
+  const [endTime, setEndTime] = useState(
+    `${today.getFullYear()}-${today.getMonth() + 1}-${(today.getDate() + 1)
+      .toString()
+      .padStart(2, "0")}`
+  );
+
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedDateObject, setSelectedDateObject] = useState({});
 
   useEffect(() => {
     const extractedPrices = priceData.map((dataObject) => {
-      return dataObject.price *.12;
+      return dataObject.price * 0.12;
     });
     const extractedTimestamps = priceData.map((dataObject) => {
       return getDateFromTimestamp(dataObject.timestamp);
@@ -56,31 +105,15 @@ const Chart = () => {
     }
     setPrices(extractedPrices);
     setTimestamps(modifiedTimestamps);
+    console.log("priceData => ", priceData);
   }, [priceData]);
-  
-  useEffect(() => {
-    const today = new Date();
-    setStartTime(
-      `${today.getUTCFullYear()}-${
-        today.getUTCMonth() + 1
-      }-${today
-        .getUTCDate()
-        .toString()
-        .padStart(2, "0")}T${today.getUTCHours().toString().padStart(2, "0")}%3A00`
-    );
-    setEndTime(
-      `${today.getFullYear()}-${today.getMonth() + 1}-${(today.getDate() + 1)
-        .toString()
-        .padStart(2, "0")}`
-    );
-  }, []);
 
   useEffect(() => {
     console.log("startTime =>", startTime);
     console.log("endTime =>", endTime);
     axios
       .get(
-        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}T23%3A59%3A59.999Z`
+        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}T21%3A59%3A59.999Z`
       )
       .then((response) => {
         setPriceData(response.data.data.ee);
@@ -88,13 +121,26 @@ const Chart = () => {
       .catch((error) => {
         console.error("API request error: ", error);
       });
-  }, []);
+  }, [startTime]);
+
+  const toggleDateModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  const handleDateConfirm = () => {
+    setModalVisible(!isModalVisible);
+    setStartTime(selectedDateObject.newStartDate);
+    setEndTime(selectedDateObject.newEndDate);
+  };
 
   return (
     <>
-      <Text>
-        {getDisplayableDate(startTime)} ööst kuni {endTime} ööni
-      </Text>
+      {startTime && (
+        <Text>
+          {getDisplayableDate(startTime)} kuni {endTime}
+        </Text>
+      )}
+
       <Text>Elektri börsihind senti/kWh</Text>
       <LineChart
         data={{
@@ -123,13 +169,45 @@ const Chart = () => {
           borderRadius: 4,
         }}
         yLabelsOffset={5}
-      /> 
-      <View style={{flexDirection:'row'}} >
-        <Button title="Vali Kuupäev"></Button>
-      <Button title="Meeldetuletused"></Button>
+      />
+      <View style={{ flexDirection: "row" }}>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={isModalVisible}
+          onRequestClose={toggleDateModal}
+        >
+          <View
+            style={{
+              flexDirection: "column",
+              flex: 1,
+              justifyContent: "center",
+            }}
+          >
+            <DatePicker
+              date={generateDate(startTime)}
+              onDateChange={(date) => {
+                let newDateObject = changeDate(date);
+                setSelectedDateObject(newDateObject);
+              }}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                flex: 1,
+                justifyContent: "center",
+              }}
+            >
+              <Button title="Katkesta" onPress={toggleDateModal} />
+              <Button title="Kinnita" onPress={handleDateConfirm} />
+            </View>
+          </View>
+        </Modal>
+        <Button title="Vali kuupäev" onPress={toggleDateModal} />
+        <Button title="Meeldetuletused"></Button>
       </View>
     </>
   );
 };
- 
+
 export default React.memo(Chart);
