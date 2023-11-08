@@ -10,7 +10,7 @@ const getDateFromTimestamp = (timestamp) => {
   const date = new Date(timestamp * 1000);
   return `${date.getHours().toString().padStart(2, "0")}`;
 };
- 
+
 const getDisplayableDate = (date) => {
   let convertedDate;
   if (date) {
@@ -22,12 +22,10 @@ const getDisplayableDate = (date) => {
 };
 
 const changeDate = (date) => {
-  let newStartDate = `${date.getUTCFullYear().toString()}-${(
-    date.getUTCMonth() + 1
-  )
+  let newStartDate = `${date.getFullYear().toString()}-${(date.getMonth() + 1)
     .toString()
     .padStart(2, "0")}-${date
-    .getUTCDate()
+    .getDate()
     .toString()
     .padStart(2, "0")}T${date.getUTCHours().toString().padStart(2, "0")}%3A00`;
   let newEndDate = `${date.getFullYear().toString()}-${(date.getMonth() + 1)
@@ -63,7 +61,7 @@ const chartConfig = {
   },
 };
 
-const Chart = ({navigation}) => {
+const Chart = ({ navigation }) => {
   const [priceData, setPriceData] = useState([]);
   const [prices, setPrices] = useState([]);
   const [timestamps, setTimestamps] = useState([]);
@@ -107,7 +105,7 @@ const Chart = ({navigation}) => {
     setTimestamps(modifiedTimestamps);
     console.log("priceData => ", priceData);
   }, [priceData]);
-  
+
   useEffect(() => {
     console.log("startTime =>", startTime);
     console.log("endTime =>", endTime);
@@ -193,7 +191,7 @@ const Chart = ({navigation}) => {
             <View
               style={{
                 flexDirection: "row",
-                flex: 1,
+                flex: 0,
                 justifyContent: "center",
               }}
             >
@@ -203,7 +201,10 @@ const Chart = ({navigation}) => {
           </View>
         </Modal>
         <Button title="Vali kuupäev" onPress={toggleDateModal} />
-        <Button onPress={()=>navigation.navigate('Reminder')} title="Meeldetuletused"></Button>
+        <Button
+          onPress={() => navigation.navigate("Reminder")}
+          title="Meeldetuletused"
+        ></Button>
       </View>
     </>
   );
