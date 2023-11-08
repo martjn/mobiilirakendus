@@ -36,25 +36,24 @@ const Reminder = ({ navigation }) => {
           <Pressable
             hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
             onPress={() => navigation.navigate("Chart")}
-          >
+          > 
             <Image style={styles.icon} source={require("./back.png")} />
           </Pressable>
         </View>
         <Text style={styles.title}>Meeldetuletused</Text>
         {reminders?.map((reminder, idx) => {
           return (
-            <View key={idx}>
-              <Text style={styles.reminders}>
-                {reminder}
-                <Button
-                  style={styles.remindersButton}
-                  onPress={() => {
-                    onReminderDelete(idx);
-                  }}
-                >
-                  x
-                </Button>
-              </Text>
+            <View style={styles.innerContainer} key={idx}>
+                <View style={styles.reminderItem}>
+                    <Text style={styles.reminders}>
+                    {reminder}</Text>
+                    <Button title='X'
+                    style={styles.remindersButton}
+                    onPress={() => {
+                        onReminderDelete(idx);
+                    }}
+                    ></Button>
+                </View>
             </View>
           );
         })}
@@ -83,10 +82,15 @@ const Reminder = ({ navigation }) => {
     </>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  innerContainer:{
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
@@ -124,14 +128,27 @@ const styles = StyleSheet.create({
   },
   reminders: {
     borderWidth: 2,
-    width: "70%",
+    width: "50%",
+    borderRadius:5,
+    fontSize: 32,
+    paddingLeft: '2%'
   },
   remindersButton: {
-    backgroundColor: "red",
-    height: "auto",
-    color: "black",
-    paddingVertical: 0,
+    backgroundColor: "#333",
+
+    color: "#fff",
+    marginTop: 0,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    width:'11%',
+    fontSize: 12
   },
+  reminderItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  }, 
 });
 
 export default React.memo(Reminder);

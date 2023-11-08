@@ -46,9 +46,10 @@ const changeDate = (date) => {
     .padStart(2, "0")}-${(date.getDate() + 1).toString().padStart(2, "0")}`;
   console.log("newStartDdate => ", newStartDate);
   console.log("newEndDate =>", newEndDate);
+
   return { newStartDate: newStartDate, newEndDate: newEndDate };
 };
-
+ 
 const generateDate = (dateString) => {
   // Replace %3A with a colon (:) to make it a valid date format
   const formattedDateString = dateString.replace(/%3A/g, ":");
