@@ -19,7 +19,15 @@ const Reminder = ({ navigation }) => {
   };
 
   const onReminderDelete = (idx) => {
-    setReminders(...reminders, reminders.splice(idx));
+    setReminders(
+      reminders.filter((reminder, i) => {
+        return i !== idx;
+      })
+    );
+  };
+
+  const devReset = () => {
+    setReminders(["13:50", "17:00"]);
   };
   return (
     <>
@@ -50,7 +58,16 @@ const Reminder = ({ navigation }) => {
             </View>
           );
         })}
-        <Button style={styles.button} title="Lisa meeldetuletus" onPress={() => setOpen(true)} />
+        <Button
+          style={styles.button}
+          title="Lisa meeldetuletus"
+          onPress={() => setOpen(true)}
+        />
+        <Button
+          style={styles.button}
+          title="Developer reset!!!"
+          onPress={() => devReset()}
+        />
       </View>
       <DatePicker
         modal
@@ -82,7 +99,7 @@ const styles = StyleSheet.create({
     top: "6%",
   },
   button: {
-    width: '50%',
+    width: "50%",
   },
   input: {
     borderWidth: 1,
@@ -100,10 +117,10 @@ const styles = StyleSheet.create({
     top: "6%",
     left: "2%",
   },
-  back:{
-    position:"absolute",
-    top: '6%',
-    left: '2%'
+  back: {
+    position: "absolute",
+    top: "6%",
+    left: "2%",
   },
   reminders: {
     borderWidth: 2,
