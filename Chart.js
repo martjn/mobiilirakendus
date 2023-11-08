@@ -11,6 +11,12 @@ const getDateFromTimestamp = (timestamp) => {
   return `${date.getHours().toString().padStart(2, "0")}`;
 };
 
+const add24hours = (timestamp) => {
+  const newTimestamp = timestamp * 1000 + 86400000;
+  const date = new Date(newTimestamp);
+  return date.toString();
+};
+
 const getFullDateFromTimestamp = (timestamp) => {
   const date = new Date(timestamp * 1000);
   return `${date
@@ -41,6 +47,7 @@ const changeDate = (date) => {
     .getDate()
     .toString()
     .padStart(2, "0")}T${date.getUTCHours().toString().padStart(2, "0")}%3A00`;
+
   let newEndDate = `${date.getFullYear().toString()}-${(date.getMonth() + 1)
     .toString()
     .padStart(2, "0")}-${(date.getDate() + 1).toString().padStart(2, "0")}`;
@@ -49,7 +56,7 @@ const changeDate = (date) => {
 
   return { newStartDate: newStartDate, newEndDate: newEndDate };
 };
- 
+
 const generateDate = (dateString) => {
   // Replace %3A with a colon (:) to make it a valid date format
   const formattedDateString = dateString.replace(/%3A/g, ":");
@@ -85,10 +92,10 @@ const Chart = ({ navigation }) => {
   const today = new Date();
 
   const [startTime, setStartTime] = useState(
-    `${today.getUTCFullYear()}-${
-      today.getUTCMonth() + 1
+    `${today.getFullYear()}-${
+      today.getMonth() + 1
     }-${today
-      .getUTCDate()
+      .getDate()
       .toString()
       .padStart(2, "0")}T${today
       .getUTCHours()
@@ -108,6 +115,7 @@ const Chart = ({ navigation }) => {
     const extractedPrices = priceData.map((dataObject) => {
       return dataObject.price * 0.12;
     });
+    let firstTimestamp = priceData[0].timestamp;
     const extractedTimestamps = priceData.map((dataObject) => {
       console.log(getFullDateFromTimestamp(dataObject.timestamp));
       return getDateFromTimestamp(dataObject.timestamp);
@@ -118,6 +126,7 @@ const Chart = ({ navigation }) => {
         modifiedTimestamps.push(extractedTimestamps[i]);
       }
     }
+    console.log("add24hours => ", add24hours(firstTimestamp));
     setPrices(extractedPrices);
     setTimestamps(modifiedTimestamps);
     console.log("priceData => ", priceData);
