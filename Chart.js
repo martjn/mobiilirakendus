@@ -11,6 +11,19 @@ const getDateFromTimestamp = (timestamp) => {
   return `${date.getHours().toString().padStart(2, "0")}`;
 };
 
+const getFullDateFromTimestamp = (timestamp) => {
+  const date = new Date(timestamp * 1000);
+  return `${date
+    .getFullYear()
+    .toString()}-${date
+    .getMonth()
+    .toString()
+    .padStart(2, "0")}-${date
+    .getDate()
+    .toString()
+    .padStart(2, "0")}-${date.getHours().toString().padStart(2, "0")}`;
+};
+
 const getDisplayableDate = (date) => {
   let convertedDate;
   if (date) {
@@ -30,7 +43,10 @@ const changeDate = (date) => {
     .padStart(2, "0")}T${date.getUTCHours().toString().padStart(2, "0")}%3A00`;
   let newEndDate = `${date.getFullYear().toString()}-${(date.getMonth() + 1)
     .toString()
-    .padStart(2, "0")}-${(date.getDate()).toString().padStart(2, "0")}`;
+    .padStart(2, "0")}-${(date.getDate() + 1).toString().padStart(2, "0")}`;
+  console.log("newStartDdate => ", newStartDate);
+  console.log("newEndDate =>", newEndDate);
+
   return { newStartDate: newStartDate, newEndDate: newEndDate };
 };
  
@@ -93,6 +109,7 @@ const Chart = ({ navigation }) => {
       return dataObject.price * 0.12;
     });
     const extractedTimestamps = priceData.map((dataObject) => {
+      console.log(getFullDateFromTimestamp(dataObject.timestamp));
       return getDateFromTimestamp(dataObject.timestamp);
     });
     let modifiedTimestamps = [];
@@ -104,6 +121,7 @@ const Chart = ({ navigation }) => {
     setPrices(extractedPrices);
     setTimestamps(modifiedTimestamps);
     console.log("priceData => ", priceData);
+    console.log("priceData length => ", priceData.length);
   }, [priceData]);
 
   useEffect(() => {
@@ -111,7 +129,7 @@ const Chart = ({ navigation }) => {
     console.log("endTime =>", endTime);
     axios
       .get(
-        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}T21%3A59%3A59.999Z`
+        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}T23%3A59%3A59.999Z`
       )
       .then((response) => {
         setPriceData(response.data.data.ee);
