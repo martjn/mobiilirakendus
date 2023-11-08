@@ -16,11 +16,15 @@ const Reminder = ({ navigation }) => {
   return (
     <>
       <View style={styles.container}>
-        <Pressable
-          hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }}
+        <View style={styles.back}>
+            <Pressable 
+          hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
           onPress={() => navigation.navigate("Chart")}
-        ></Pressable>
-        <Image source={require("./back.png")} />
+        >
+            <Image style={styles.icon} source={require("./back.png")} />
+        </Pressable>
+        
+        </View>
         <Text style={styles.title}>Meeldetuletused</Text>
         <Text style={styles.subtitle}>Lisa meeldetuletus</Text>
         <TextInput style={styles.input} />
@@ -53,6 +57,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 16,
+    fontWeight:'bold',
+    position:"absolute",
+    top: '6%'
   },
   subtitle: {
     fontSize: 18,
@@ -64,6 +71,15 @@ const styles = StyleSheet.create({
     padding: 8,
     marginTop: 24,
   },
+  icon:{
+    height: 36,
+    width:36
+  },
+  back:{
+    position:"absolute",
+    top: '6%',
+    left: '2%'
+  }
 });
 
 export default React.memo(Reminder);
