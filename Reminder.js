@@ -17,23 +17,36 @@ const Reminder = ({ navigation }) => {
   const onDateCancel = () => {
     setOpen(false);
   };
+
+  const onReminderDelete = (idx) => {
+    setReminders(...reminders, reminders.splice(idx));
+  };
   return (
     <>
       <View style={styles.container}>
         <View style={styles.back}>
-            <Pressable 
-          hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
-          onPress={() => navigation.navigate("Chart")}
-        >
+          <Pressable
+            hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+            onPress={() => navigation.navigate("Chart")}
+          >
             <Image style={styles.icon} source={require("./back.png")} />
-        </Pressable>
-        
+          </Pressable>
         </View>
         <Text style={styles.title}>Meeldetuletused</Text>
         {reminders?.map((reminder, idx) => {
           return (
             <View key={idx}>
-              <Text style={styles.reminders}>{reminder}</Text>
+              <Text style={styles.reminders}>
+                {reminder}
+                <Button
+                  style={styles.remindersButton}
+                  onPress={() => {
+                    onReminderDelete(idx);
+                  }}
+                >
+                  x
+                </Button>
+              </Text>
             </View>
           );
         })}
@@ -65,9 +78,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 16,
-    fontWeight:'bold',
-    position:"absolute",
-    top: '6%'
+    fontWeight: "bold",
+    position: "absolute",
+    top: "6%",
   },
   subtitle: {
     fontSize: 18,
@@ -79,18 +92,24 @@ const styles = StyleSheet.create({
     padding: 8,
     marginTop: 24,
   },
-  icon:{
+  icon: {
     height: 36,
-    width:36
+    width: 36,
   },
-  back:{
-    position:"absolute",
-    top: '6%',
-    left: '2%'
-  }
+  back: {
+    position: "absolute",
+    top: "6%",
+    left: "2%",
+  },
   reminders: {
     borderWidth: 2,
     width: "70%",
+  },
+  remindersButton: {
+    backgroundColor: "red",
+    height: "auto",
+    color: "black",
+    paddingVertical: 0,
   },
 });
 
