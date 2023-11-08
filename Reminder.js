@@ -1,18 +1,22 @@
 import React, { useState, useContext } from "react";
-import {
-  Pressable,
-  Text,
-  TextInput,
-  View,
-  Image,
-  StyleSheet,
-} from "react-native";
+import { Pressable, Text, View, Image, StyleSheet } from "react-native";
 import Button from "./Button";
 import DatePicker from "react-native-date-picker";
 
 const Reminder = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+
+  const [reminders, setReminders] = useState(["13:50", "17:00"]);
+
+  const onDateConfirm = (date) => {
+    setDate(date);
+    setOpen(false);
+    console.log("set date =>", date);
+  };
+  const onDateCancel = () => {
+    setOpen(false);
+  };
   return (
     <>
       <View style={styles.container}>
@@ -22,21 +26,25 @@ const Reminder = ({ navigation }) => {
         ></Pressable>
         <Image source={require("./back.png")} />
         <Text style={styles.title}>Meeldetuletused</Text>
+        {reminders?.map((reminder, idx) => {
+          return (
+            <View key={idx}>
+              <Text style={styles.reminders}>{reminder}</Text>
+            </View>
+          );
+        })}
         <Text style={styles.subtitle}>Lisa meeldetuletus</Text>
-        <TextInput style={styles.input} />
-        <Button title="Lisa" />
+        <Button title="Lisa" onPress={() => setOpen(true)} />
       </View>
-      <Button title="Open" onPress={() => setOpen(true)} />
       <DatePicker
         modal
         open={open}
         date={date}
-        onConfirm={(date) => {
-          setOpen(false);
-          setDate(date);
+        onConfirm={(selectedDate) => {
+          onDateConfirm(selectedDate);
         }}
         onCancel={() => {
-          setOpen(false);
+          onDateCancel();
         }}
       />
     </>
@@ -63,6 +71,10 @@ const styles = StyleSheet.create({
     width: "70%",
     padding: 8,
     marginTop: 24,
+  },
+  reminders: {
+    borderWidth: 2,
+    width: "70%",
   },
 });
 
