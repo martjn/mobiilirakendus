@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 5,
+    marginLeft:'3%',
   }, 
 });
 
