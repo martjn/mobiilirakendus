@@ -37,8 +37,7 @@ const Reminder = ({ navigation }) => {
             </View>
           );
         })}
-        <Text style={styles.subtitle}>Lisa meeldetuletus</Text>
-        <Button title="Lisa" onPress={() => setOpen(true)} />
+        <Button style={styles.button} title="Lisa meeldetuletus" onPress={() => setOpen(true)} />
       </View>
       <DatePicker
         modal
@@ -69,8 +68,8 @@ const styles = StyleSheet.create({
     position:"absolute",
     top: '6%'
   },
-  subtitle: {
-    fontSize: 18,
+  button: {
+    width: '50%',
   },
   input: {
     borderWidth: 1,
@@ -87,7 +86,7 @@ const styles = StyleSheet.create({
     position:"absolute",
     top: '6%',
     left: '2%'
-  }
+  },
   reminders: {
     borderWidth: 2,
     width: "70%",
