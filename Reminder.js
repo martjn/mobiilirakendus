@@ -2,6 +2,13 @@ import React, { useState, useContext } from "react";
 import { Pressable, Text, View, Image, StyleSheet } from "react-native";
 import Button from "./Button";
 import DatePicker from "react-native-date-picker";
+import PushNotification from "react-native-push-notification";
+
+PushNotification.configure({
+  // ...other configurations
+  requestPermissions: true,
+});
+
 
 const Reminder = ({ navigation }) => {
   const [date, setDate] = useState(new Date());
@@ -9,25 +16,43 @@ const Reminder = ({ navigation }) => {
 
   const [reminders, setReminders] = useState(["13:50", "17:00"]);
 
-  const onDateConfirm = (date) => {
-    setDate(date);
+  const onDateConfirm = (selectedDate) => {
+    // Convert selectedDate to timestamp
+    const timestamp = selectedDate.getTime();
+    const formattedTime = selectedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Schedule the reminder
+    scheduleReminder(timestamp, formattedTime);
+
+    setDate(selectedDate);
     setOpen(false);
-    console.log("set date =>", date);
   };
+ 
+  const scheduleReminder = (time, message) => {
+    PushNotification.localNotificationSchedule({
+      date: new Date(time),
+      message: `Reminder at ${message}`,
+    });
+
+    // Update reminders state
+    setReminders([...reminders, message]);
+  };
+
   const onDateCancel = () => {
     setOpen(false);
   };
 
-  const onReminderDelete = (idx) => {
-    setReminders(
-      reminders.filter((reminder, i) => {
-        return i !== idx;
-      })
-    );
+  const onReminderDelete = (index) => {
+    const updatedReminders = [...reminders];
+    updatedReminders.splice(index, 1);
+    setReminders(updatedReminders);
+    // You might want to cancel the scheduled notification for this reminder as well
+    // using PushNotification.cancelLocalNotifications({ id: reminderId });
   };
 
   const devReset = () => {
-    setReminders(["13:50", "17:00"]);
+    setReminders(['13:50', '17:00']);
+    // You might also want to clear all scheduled notifications here using PushNotification.cancelAllLocalNotifications();
   };
   return (
     <>
