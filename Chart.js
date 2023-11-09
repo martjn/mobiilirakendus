@@ -12,22 +12,17 @@ const getDateFromTimestamp = (timestamp) => {
 };
 
 const add24hours = (timestamp) => {
-  const newTimestamp = timestamp * 1000 + 86400000;
-  const date = new Date(newTimestamp);
-  return date.toString();
+  return timestamp + 86400;
 };
 
 const getFullDateFromTimestamp = (timestamp) => {
   const date = new Date(timestamp * 1000);
-  return `${date
-    .getFullYear()
-    .toString()}-${date
-    .getMonth()
+  return `${date.getFullYear().toString()}-${(date.getMonth() + 1)
     .toString()
     .padStart(2, "0")}-${date
     .getDate()
     .toString()
-    .padStart(2, "0")}-${date.getHours().toString().padStart(2, "0")}`;
+    .padStart(2, "0")}T${date.getHours().toString().padStart(2, "0")}%3A00`;
 };
 
 const getDisplayableDate = (date) => {
@@ -50,7 +45,9 @@ const changeDate = (date) => {
 
   let newEndDate = `${date.getFullYear().toString()}-${(date.getMonth() + 1)
     .toString()
-    .padStart(2, "0")}-${(date.getDate() + 1).toString().padStart(2, "0")}`;
+    .padStart(2, "0")}-${(date.getDate() + 1)
+    .toString()
+    .padStart(2, "0")}T23%3A00`;
   console.log("newStartDdate => ", newStartDate);
   console.log("newEndDate =>", newEndDate);
 
@@ -105,48 +102,64 @@ const Chart = ({ navigation }) => {
   const [endTime, setEndTime] = useState(
     `${today.getFullYear()}-${today.getMonth() + 1}-${(today.getDate() + 1)
       .toString()
-      .padStart(2, "0")}`
+      .padStart(2, "0")}T${today
+      .getUTCHours()
+      .toString()
+      .padStart(2, "0")}%3A00`
   );
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedDateObject, setSelectedDateObject] = useState({});
 
-  useEffect(() => {
-    const extractedPrices = priceData.map((dataObject) => {
-      return dataObject.price * 0.12;
-    });
-    let firstTimestamp = priceData[0].timestamp;
-    const extractedTimestamps = priceData.map((dataObject) => {
-      console.log(getFullDateFromTimestamp(dataObject.timestamp));
-      return getDateFromTimestamp(dataObject.timestamp);
-    });
-    let modifiedTimestamps = [];
-    for (let i = 0; i < extractedTimestamps.length; i++) {
-      if (i % 2 == 0) {
-        modifiedTimestamps.push(extractedTimestamps[i]);
-      }
-    }
-    console.log("add24hours => ", add24hours(firstTimestamp));
-    setPrices(extractedPrices);
-    setTimestamps(modifiedTimestamps);
-    console.log("priceData => ", priceData);
-    console.log("priceData length => ", priceData.length);
-  }, [priceData]);
-
-  useEffect(() => {
-    console.log("startTime =>", startTime);
-    console.log("endTime =>", endTime);
+  const [isLoading, setIsLoading] = useState(true);
+  const fetchData = () => {
+    setIsLoading(true);
     axios
       .get(
-        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}T23%3A59%3A59.999Z`
+        `https://dashboard.elering.ee/api/nps/price?start=${startTime}%3A00.999Z&end=${endTime}%3A59.999Z`
       )
       .then((response) => {
         setPriceData(response.data.data.ee);
+        setEndTime(
+          getFullDateFromTimestamp(
+            add24hours(response.data.data.ee[0].timestamp)
+          )
+        );
+        setIsLoading(false);
+        console.log("priceData", priceData);
       })
       .catch((error) => {
         console.error("API request error: ", error);
+        setIsLoading(false);
       });
-  }, [startTime]);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [startTime, endTime]);
+
+  const processPriceData = () => {
+    const extractedPrices = priceData.map((dataObject) => {
+      return dataObject.price * 0.12;
+    });
+
+    const extractedTimestamps = priceData.map((dataObject) => {
+      return getDateFromTimestamp(dataObject.timestamp);
+    });
+
+    const modifiedTimestamps = extractedTimestamps.filter(
+      (_, index) => index % 2 === 0
+    );
+
+    setPrices(extractedPrices);
+    setTimestamps(modifiedTimestamps);
+  };
+
+  useEffect(() => {
+    if (priceData.length > 0) {
+      processPriceData();
+    }
+  }, [priceData]);
 
   const toggleDateModal = () => {
     setModalVisible(!isModalVisible);
@@ -158,11 +171,11 @@ const Chart = ({ navigation }) => {
     setEndTime(selectedDateObject.newEndDate);
   };
 
-  return (
+  return !isLoading ? (
     <>
       {startTime && (
         <Text>
-          {getDisplayableDate(startTime)} kuni {endTime}
+          {getDisplayableDate(startTime)} kuni {getDisplayableDate(endTime)}
         </Text>
       )}
       <Text>Elektri börsihind senti/kWh</Text>
@@ -234,6 +247,8 @@ const Chart = ({ navigation }) => {
         ></Button>
       </View>
     </>
+  ) : (
+    <Text>Loading...</Text>
   );
 };
 
