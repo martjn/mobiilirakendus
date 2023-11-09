@@ -12,7 +12,8 @@ const Reminder = ({ navigation }) => {
   const onDateConfirm = (date) => {
     setDate(date);
     setOpen(false);
-    console.log("set date =>", date);
+    const dateString = date.toString().slice(16, 21);
+    setReminders([...reminders, dateString]);
   };
   const onDateCancel = () => {
     setOpen(false);
@@ -26,9 +27,6 @@ const Reminder = ({ navigation }) => {
     );
   };
 
-  const devReset = () => {
-    setReminders(["13:50", "17:00"]);
-  };
   return (
     <>
       <View style={styles.container}>
@@ -36,7 +34,7 @@ const Reminder = ({ navigation }) => {
           <Pressable
             hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
             onPress={() => navigation.navigate("Chart")}
-          > 
+          >
             <Image style={styles.icon} source={require("./back.png")} />
           </Pressable>
         </View>
@@ -44,16 +42,16 @@ const Reminder = ({ navigation }) => {
         {reminders?.map((reminder, idx) => {
           return (
             <View style={styles.innerContainer} key={idx}>
-                <View style={styles.reminderItem}>
-                    <Text style={styles.reminders}>
-                    {reminder}</Text>
-                    <Button title='X'
-                    style={styles.remindersButton}
-                    onPress={() => {
-                        onReminderDelete(idx);
-                    }}
-                    ></Button>
-                </View>
+              <View style={styles.reminderItem}>
+                <Text style={styles.reminders}>{reminder}</Text>
+                <Button
+                  title="X"
+                  style={styles.remindersButton}
+                  onPress={() => {
+                    onReminderDelete(idx);
+                  }}
+                ></Button>
+              </View>
             </View>
           );
         })}
@@ -61,11 +59,6 @@ const Reminder = ({ navigation }) => {
           style={styles.button}
           title="Lisa meeldetuletus"
           onPress={() => setOpen(true)}
-        />
-        <Button
-          style={styles.button}
-          title="Developer reset!!!"
-          onPress={() => devReset()}
         />
       </View>
       <DatePicker
@@ -82,7 +75,7 @@ const Reminder = ({ navigation }) => {
     </>
   );
 };
- 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -90,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
   },
-  innerContainer:{
+  innerContainer: {
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
@@ -129,9 +122,9 @@ const styles = StyleSheet.create({
   reminders: {
     borderWidth: 2,
     width: "50%",
-    borderRadius:5,
+    borderRadius: 5,
     fontSize: 32,
-    paddingLeft: '2%'
+    paddingLeft: "2%",
   },
   remindersButton: {
     backgroundColor: "#333",
@@ -140,15 +133,16 @@ const styles = StyleSheet.create({
     marginTop: 0,
     paddingVertical: 12,
     paddingHorizontal: 12,
-    width:'11%',
-    fontSize: 12
+    width: "11%",
+    fontSize: 12,
   },
   reminderItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 5,
-  }, 
+    marginLeft: "3%",
+  },
 });
 
 export default React.memo(Reminder);

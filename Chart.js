@@ -174,11 +174,13 @@ const Chart = ({ navigation }) => {
   return !isLoading ? (
     <>
       {startTime && (
-        <Text>
+        <Text style={{ fontWeight: "bold", fontSize: 24 }}>
           {getDisplayableDate(startTime)} kuni {getDisplayableDate(endTime)}
         </Text>
       )}
-      <Text>Elektri börsihind senti/kWh</Text>
+      <Text style={{ fontWeight: "bold", fontSize: 24 }}>
+        Elektri börsihind senti/kWh
+      </Text>
       <LineChart
         data={{
           labels:
